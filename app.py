@@ -14,7 +14,7 @@ load_dotenv()
 # -------------------- CONFIG --------------------
 st.set_page_config(page_title="Naija Legal AI Assistant",
                    page_icon="💎", layout="wide")
-st.title("Nigeria's no. 1 Legal AI Platform")
+st.title("Naija's no. 1 Legal AI Platform")
 
 # -------------------- AUTH --------------------
 user = get_current_firebase_user()

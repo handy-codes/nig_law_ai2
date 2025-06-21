@@ -1,3 +1,4 @@
+<!-- and c:\Users\Emeka\Desktop\Projects\nig_law_ai\login.html -->
 <!DOCTYPE html>
 <html>
 <head>
@@ -11,7 +12,7 @@
             justify-content: center;
             align-items: center;
             min-height: 100vh;
-            background-color: #24292e; /* Dark background similar to Streamlit */
+            background-color: #24292e;
             color: #ffffff;
             margin: 0;
             flex-direction: column;
@@ -25,7 +26,7 @@
         }
         h2 {
             margin-bottom: 20px;
-            color: #4CAF50; /* Streamlit-like green */
+            color: #4CAF50;
         }
         button {
             background-color: #4CAF50;
@@ -57,12 +58,12 @@
     <script>
         // Your Firebase Web App Configuration
         const firebaseConfig = {
-        apiKey: "AIzaSyAlDa---D8pBz5RrUP5FrF-4wDaJHvySJE",
-        authDomain: "juristai-fe067.firebaseapp.com",
-        projectId: "juristai-fe067",
-        storageBucket: "juristai-fe067.firebasestorage.app",
-        messagingSenderId: "1068314462876",
-        appId: "1:1068314462876:web:4ec934c1c5b6ac63bb3b59",
+            apiKey: "AIzaSyAlDa---D8pBz5RrUP5FrF-4wDaJHvySJE",
+            authDomain: "juristai-fe067.firebaseapp.com",
+            projectId: "juristai-fe067",
+            storageBucket: "juristai-fe067.firebasestorage.app",
+            messagingSenderId: "1068314462876",
+            appId: "1:1068314462876:web:4ec934c1c5b6ac63bb3b59",
         };
 
         // Initialize Firebase
@@ -73,21 +74,21 @@
         const signInButton = document.getElementById('signInButton');
         const messageDiv = document.getElementById('message');
 
+        function getBaseUrl() {
+            // This will be https://jurist-ai.onrender.com in prod, http://localhost:8501 in dev
+            return window.location.origin;
+        }
+
         signInButton.addEventListener('click', () => {
             messageDiv.textContent = 'Redirecting to Google...';
             auth.signInWithPopup(provider)
                 .then((result) => {
                     const user = result.user;
-                    const idToken = user.getIdToken(); // Get the Firebase ID token
-
-                    // Redirect to Streamlit app with the ID token
-                    idToken.then(token => {
-                        window.location.href = `http://localhost:8501/?firebase_token=${token}`;
-                    }).catch(error => {
-                        console.error("Error getting ID token:", error);
-                        messageDiv.textContent = `Error getting ID token: ${error.message}`;
-                    });
-
+                    return user.getIdToken();
+                })
+                .then(token => {
+                    const baseUrl = getBaseUrl();
+                    window.location.href = `${baseUrl}/?firebase_token=${token}`;
                 })
                 .catch((error) => {
                     console.error("Google Sign-In error:", error);
@@ -96,4 +97,4 @@
         });
     </script>
 </body>
-</html> 
+</html>

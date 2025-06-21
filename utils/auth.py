@@ -124,22 +124,18 @@ def get_login_url():
     current_url_list = query_params_dict.get("_stcore", [""])
     current_url = current_url_list[0] if current_url_list else ""
 
-    if not current_url:
-        # If we can't get the current URL, use a relative path
-        return "/login.html"
-
-    # Parse the current URL to get the base
-    parsed_url = urlparse(current_url)
-    base_url = f"{parsed_url.scheme}://{parsed_url.netloc}"
-
-    # In development, use localhost:8000 for the static server
-    if os.getenv("ENVIRONMENT") == "development":
+    # Use localhost:8000 ONLY if ENVIRONMENT is explicitly set to "development"
+    if os.getenv("ENVIRONMENT", "").lower() == "development":
         return "http://localhost:8000/login.html"
 
-    # In production, use the same domain (should be caught by RENDER_EXTERNAL_URL now)
-    return f"{base_url}/login.html"
+    # Otherwise, use the current domain (works for both dev and prod if served from same host)
+    if current_url:
+        parsed_url = urlparse(current_url)
+        base_url = f"{parsed_url.scheme}://{parsed_url.netloc}"
+        return f"{base_url}/login.html"
 
-
+    # As a last fallback, use a relative path
+    return "/login.html"
 
 
 

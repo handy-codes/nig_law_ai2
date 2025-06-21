@@ -56,7 +56,7 @@ env.bak/
 .cache/
 
 # pyenv
-.python-version
+# .python-version
 
 # macOS
 .DS_Store

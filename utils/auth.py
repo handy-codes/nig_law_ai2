@@ -100,8 +100,9 @@ def login_required(func):
     def wrapper(*args, **kwargs):
         if not get_current_firebase_user():
             st.warning("Please log in to access this feature.")
-            st.markdown("""
-            <a href="http://localhost:8000/login.html" target="_self">
+            login_url = get_login_url()
+            st.markdown(f"""
+            <a href="{login_url}" target="_self">
                 <button style="padding: 10px 20px; background-color: #16610E; color: #C7E8FF; font-weight: 400; border: none; border-radius: 5px; cursor: pointer;">
                     Sign In with Google
                 </button>

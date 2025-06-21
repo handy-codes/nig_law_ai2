@@ -55,52 +55,63 @@
     </div>
 
     <script>
-        // Your Firebase Web App Configuration
-        const firebaseConfig = {
-            apiKey: "AIzaSyAlDa---D8pBz5RrUP5FrF-4wDaJHvySJE",
-            authDomain: "juristai-fe067.firebaseapp.com",
-            projectId: "juristai-fe067",
-            storageBucket: "juristai-fe067.firebasestorage.app",
-            messagingSenderId: "1068314462876",
-            appId: "1:1068314462876:web:4ec934c1c5b6ac63bb3b59",
-        };
+    // Your Firebase Web App Configuration
+    const firebaseConfig = {
+        apiKey: "AIzaSyAlDa---D8pBz5RrUP5FrF-4wDaJHvySJE",
+        authDomain: "juristai-fe067.firebaseapp.com",
+        projectId: "juristai-fe067",
+        storageBucket: "juristai-fe067.firebasestorage.app",
+        messagingSenderId: "1068314462876",
+        appId: "1:1068314462876:web:4ec934c1c5b6ac63bb3b59",
+    };
 
-        // Initialize Firebase
-        firebase.initializeApp(firebaseConfig);
+    // Initialize Firebase
+    firebase.initializeApp(firebaseConfig);
 
-        const auth = firebase.auth();
-        const provider = new firebase.auth.GoogleAuthProvider();
-        const signInButton = document.getElementById('signInButton');
-        const messageDiv = document.getElementById('message');
-        const streamlitAppUrl = "https://jurist-ai.onrender.com";
+    const auth = firebase.auth();
+    const provider = new firebase.auth.GoogleAuthProvider();
+    const signInButton = document.getElementById('signInButton');
+    const messageDiv = document.getElementById('message');
 
-        // On page load, check if user is already signed in (persistent session)
-        auth.onAuthStateChanged((user) => {
-            if (user) {
-                // User is signed in, get a fresh token and redirect
+    function getStreamlitAppUrl() {
+        if (window.location.hostname === "localhost" || window.location.hostname === "127.0.0.1") {
+            return "http://localhost:8501";
+        }
+        return "https://jurist-ai.onrender.com";
+    }
+    const streamlitAppUrl = getStreamlitAppUrl();
+
+    auth.onAuthStateChanged((user) => {
+        if (user) {
+            signInButton.textContent = `Continue as ${user.email}`;
+            signInButton.onclick = () => {
                 user.getIdToken().then(token => {
-                    localStorage.setItem('firebase_token', token); // Save token
+                    localStorage.setItem('firebase_token', token);
                     window.location.href = `${streamlitAppUrl}/?firebase_token=${token}`;
                 });
-            }
+            };
+        } else {
+            signInButton.textContent = "Sign In with Google";
+            signInButton.onclick = () => {
+                messageDiv.textContent = 'Redirecting to Google...';
+                auth.signInWithPopup(provider)
+                    .then((result) => {
+                        const user = result.user;
+                        return user.getIdToken();
+                    })
+                    .then(token => {
+                        localStorage.setItem('firebase_token', token);
+                        window.location.href = `${streamlitAppUrl}/?firebase_token=${token}`;
+                    })
+                    .catch((error) => {
+                        console.error("Google Sign-In error:", error);
+                        messageDiv.textContent = `Sign-in failed: ${error.message}`;
+                    });
+            };
+        }
         });
-
-        signInButton.addEventListener('click', () => {
-            messageDiv.textContent = 'Redirecting to Google...';
-            auth.signInWithPopup(provider)
-                .then((result) => {
-                    const user = result.user;
-                    return user.getIdToken();
-                })
-                .then(token => {
-                    localStorage.setItem('firebase_token', token); // Save token
-                    window.location.href = `${streamlitAppUrl}/?firebase_token=${token}`;
-                })
-                .catch((error) => {
-                    console.error("Google Sign-In error:", error);
-                    messageDiv.textContent = `Sign-in failed: ${error.message}`;
-                });
-        });
-    </script>
-</body>
+        </script>
+    </body>
 </html>
+
+

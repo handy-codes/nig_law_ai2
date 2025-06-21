@@ -114,20 +114,22 @@ def login_required(func):
 
 def get_login_url():
     """Get the login URL based on environment"""
-    # Use static site URL if available
+
+    # 1. Development: use local static server
+    if os.getenv("ENVIRONMENT", "").lower() == "development":
+        return "http://localhost:8000/login.html"
+
+    # 2. Production: use static site if available
     static_url = os.getenv("STATIC_LOGIN_URL")  # e.g. https://jurist-ai-static.onrender.com
     if static_url:
         return f"{static_url}/login.html"
 
-    # Fallbacks as before...
+    # 3. Render fallback
     render_url = os.getenv("RENDER_EXTERNAL_URL")
     if render_url:
         return f"{render_url.replace('http://', 'https://')}/login.html"
 
-    if os.getenv("ENVIRONMENT", "").lower() == "development":
-        return "http://localhost:8000/login.html"
-
-    # Otherwise, use the current domain
+    # 4. Otherwise, use the current domain
     query_params_dict = st.query_params
     current_url_list = query_params_dict.get("_stcore", [""])
     current_url = current_url_list[0] if current_url_list else ""
@@ -136,6 +138,7 @@ def get_login_url():
         base_url = f"{parsed_url.scheme}://{parsed_url.netloc}"
         return f"{base_url}/login.html"
 
+    # 5. Last fallback
     return "/login.html"
 
 

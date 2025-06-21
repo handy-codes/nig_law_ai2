@@ -55,7 +55,7 @@
     </div>
 
     <script>
-        // Your Firebase Web App Configuration
+    // Your Firebase Web App Configuration
     const firebaseConfig = {
         apiKey: "AIzaSyAlDa---D8pBz5RrUP5FrF-4wDaJHvySJE",
         authDomain: "juristai-fe067.firebaseapp.com",
@@ -72,9 +72,15 @@
     const provider = new firebase.auth.GoogleAuthProvider();
     const signInButton = document.getElementById('signInButton');
     const messageDiv = document.getElementById('message');
-    const streamlitAppUrl = "https://jurist-ai.onrender.com";
 
-    // Only show "Continue as..." if already signed in
+    function getStreamlitAppUrl() {
+        if (window.location.hostname === "localhost" || window.location.hostname === "127.0.0.1") {
+            return "http://localhost:8501";
+        }
+        return "https://jurist-ai.onrender.com";
+    }
+    const streamlitAppUrl = getStreamlitAppUrl();
+
     auth.onAuthStateChanged((user) => {
         if (user) {
             signInButton.textContent = `Continue as ${user.email}`;
@@ -103,7 +109,9 @@
                     });
             };
         }
-    });
-    </script>
-</body>
+        });
+        </script>
+    </body>
 </html>
+
+

@@ -50,26 +50,24 @@ elif selection == "📂 AI Query Panel":
     query_builder_ui()
 
 # -------------------- SIDEBAR FOOTER --------------------
-st.sidebar.markdown("<br><br><br><br><br><br><br>", unsafe_allow_html=True)
-st.sidebar.markdown(
-    '<p style="font-size: 17px; text-align: center; color: #47D1FD;"><em>Beta Release</em></p>',
-    unsafe_allow_html=True
-)
+st.sidebar.markdown("<br><br><br>", unsafe_allow_html=True)
+
 st.sidebar.markdown(
     """
-    <hr style="margin-top: 0; margin-bottom: 5px;">
-    <p style="font-size: 15px; text-align: center;">
-        © <a href="https://www.techxos.com" target="_blank" style="text-decoration: none; color: white;">
-        Techxos Digital Solutions 2025</a>
-    </p>
+    <div class="sidebar-footer">
+        <p style="font-size: 17px; text-align: center; color: #47D1FD;"><em>Beta Release</em></p>
+        <hr style="margin-top: 0; margin-bottom: 5px;">
+        <p style="font-size: 15px; text-align: center;">
+            © <a href="https://www.techxos.com" target="_blank" style="text-decoration: none; color: white;">
+            Techxos Digital Solutions 2025</a>
+        </p>
+    </div>
     """,
     unsafe_allow_html=True
 )
-
 # -------------------- CUSTOM CSS --------------------
 st.markdown("""
 <style>
-    footer {visibility: hidden;}
     [data-testid="collapsedControl"] {
         transform: scale(1.5);
         margin-top: 10px;

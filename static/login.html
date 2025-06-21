@@ -78,23 +78,31 @@
             // This will be https://jurist-ai.onrender.com in prod, http://localhost:8501 in dev
             return window.location.origin;
         }
+        const streamlitAppUrl = "https://jurist-ai.onrender.com";
 
-        const streamlitAppUrl = "https://jurist-ai.onrender.com"; // <-- your Streamlit app URL
+        // On page load, check for token in localStorage
+        document.addEventListener('DOMContentLoaded', () => {
+            const savedToken = localStorage.getItem('firebase_token');
+            if (savedToken) {
+                window.location.href = `${streamlitAppUrl}/?firebase_token=${savedToken}`;
+            }
+        });
 
         signInButton.addEventListener('click', () => {
-        messageDiv.textContent = 'Redirecting to Google...';
-        auth.signInWithPopup(provider)
-            .then((result) => {
-                const user = result.user;
-                return user.getIdToken();
-            })
-            .then(token => {
-                window.location.href = `${streamlitAppUrl}/?firebase_token=${token}`;
-            })
-            .catch((error) => {
-                console.error("Google Sign-In error:", error);
-                messageDiv.textContent = `Sign-in failed: ${error.message}`;
-            });
+            messageDiv.textContent = 'Redirecting to Google...';
+            auth.signInWithPopup(provider)
+                .then((result) => {
+                    const user = result.user;
+                    return user.getIdToken();
+                })
+                .then(token => {
+                    localStorage.setItem('firebase_token', token); // Save token
+                    window.location.href = `${streamlitAppUrl}/?firebase_token=${token}`;
+                })
+                .catch((error) => {
+                    console.error("Google Sign-In error:", error);
+                    messageDiv.textContent = `Sign-in failed: ${error.message}`;
+                });
         });
     </script>
 </body>

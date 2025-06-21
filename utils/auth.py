@@ -114,31 +114,29 @@ def login_required(func):
 
 def get_login_url():
     """Get the login URL based on environment"""
-    # Prioritize RENDER_EXTERNAL_URL for Render deployments
+    # Use static site URL if available
+    static_url = os.getenv("STATIC_LOGIN_URL")  # e.g. https://jurist-ai-static.onrender.com
+    if static_url:
+        return f"{static_url}/login.html"
+
+    # Fallbacks as before...
     render_url = os.getenv("RENDER_EXTERNAL_URL")
     if render_url:
-        # Ensure https and append login.html
         return f"{render_url.replace('http://', 'https://')}/login.html"
 
-    # Fallback for local development or other environments
-    query_params_dict = st.query_params
-    current_url_list = query_params_dict.get("_stcore", [""])
-    current_url = current_url_list[0] if current_url_list else ""
-
-    # Use localhost:8000 ONLY if ENVIRONMENT is explicitly set to "development"
     if os.getenv("ENVIRONMENT", "").lower() == "development":
         return "http://localhost:8000/login.html"
 
-    # Otherwise, use the current domain (works for both dev and prod if served from same host)
+    # Otherwise, use the current domain
+    query_params_dict = st.query_params
+    current_url_list = query_params_dict.get("_stcore", [""])
+    current_url = current_url_list[0] if current_url_list else ""
     if current_url:
         parsed_url = urlparse(current_url)
         base_url = f"{parsed_url.scheme}://{parsed_url.netloc}"
         return f"{base_url}/login.html"
 
-    # As a last fallback, use a relative path
     return "/login.html"
-
-
 
 
 # import os

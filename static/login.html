@@ -1,3 +1,4 @@
+<!-- and c:\Users\Emeka\Desktop\Projects\nig_law_ai\login.html -->
 <!DOCTYPE html>
 <html>
 <head>
@@ -74,10 +75,8 @@
         const messageDiv = document.getElementById('message');
 
         function getBaseUrl() {
-            if (window.location.hostname.includes('onrender.com')) {
-                return `https://${window.location.hostname}`;
-            }
-            return 'http://localhost:8501';
+            // This will be https://jurist-ai.onrender.com in prod, http://localhost:8501 in dev
+            return window.location.origin;
         }
 
         signInButton.addEventListener('click', () => {
@@ -92,8 +91,10 @@
                     window.location.href = `${baseUrl}/?firebase_token=${token}`;
                 })
                 .catch((error) => {
-                        console.error("Google Sign-In error:", error);
-                                        messageDiv.textContent = `Sign-in failed: ${error.message}`;
-                                    });
-                        });
-                    </script>
+                    console.error("Google Sign-In error:", error);
+                    messageDiv.textContent = `Sign-in failed: ${error.message}`;
+                });
+        });
+    </script>
+</body>
+</html>

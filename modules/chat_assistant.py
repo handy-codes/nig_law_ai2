@@ -9,6 +9,7 @@ from utils.auth import get_current_firebase_user, login_required
 from config.database import SessionLocal
 import json
 import re
+from utils.vector_db import search_chunks  # <-- NEW IMPORT
 
 load_dotenv()
 GROQ_API_KEY = os.getenv("GROQ_API_KEY")
@@ -49,6 +50,12 @@ def format_response(text):
     return '\n\n'.join(formatted_sections)
 
 
+def get_context_from_db(user_query, k=5):
+    results = search_chunks(user_query, k=k)
+    context = "\n\n".join([r[1] for r in results])  # r[1] is the chunk text
+    return context
+
+
 @login_required
 def chat_interface():
     st.header("💬 Nigerian Legal AI Assistant")
@@ -85,7 +92,21 @@ def chat_interface():
 
         with st.spinner("Thinking like a lawyer..."):
             try:
-                # Call Groq API
+                # --- RAG: Retrieve context from vector DB ---
+                context = get_context_from_db(user_input, k=5)
+
+                # --- Compose prompt with context ---
+                prompt = f"""
+                You are a Nigerian legal expert AI. Use the following context from Nigerian law to answer the user's question. Cite the source if possible.
+
+                Context:
+                {context}
+
+                Question:
+                {user_input}
+                """
+
+                # --- Call Groq API with RAG prompt ---
                 url = "https://api.groq.com/openai/v1/chat/completions"
                 headers = {
                     "Content-Type": "application/json",
@@ -93,7 +114,9 @@ def chat_interface():
                 }
                 payload = {
                     "model": "llama3-8b-8192",
-                    "messages": st.session_state.chat_history,
+                    "messages": [
+                        {"role": "system", "content": prompt}
+                    ],
                     "temperature": 0.2,
                     "max_tokens": 1000,
                     "stream": False
@@ -223,9 +246,11 @@ def chat_interface():
                                 is_helpful=False,
                                 feedback_text=feedback_text
                             )
-                            st.success("Additional feedback submitted! Thank you!")
+                            st.success(
+                                "Additional feedback submitted! Thank you!")
                     else:
-                        st.warning("Please enter some text for additional feedback.")
+                        st.warning(
+                            "Please enter some text for additional feedback.")
 
     # Add a clear chat button in the sidebar
     if st.sidebar.button("Clear Chat History"):

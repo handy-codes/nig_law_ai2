@@ -77,6 +77,5 @@ env.bak/
 Thumbs.db
 Desktop.ini
 
-
 # Firebase credentials (DO NOT TRACK)
 firebase-service-account.json
